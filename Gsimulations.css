@@ -1,0 +1,36 @@
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #000010, #000);
+    color: rgb(0, 0, 0);
+    font-family: sans-serif;
+  }
+
+  canvas {
+    display: block;
+    margin: 0 auto;
+    background: transparent;
+  }
+
+  .controls {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    font-family: sans-serif;
+  }
+
+  .controls input {
+    width: 60px;
+  }
+
+  .energy {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: monospace;
+  }
+  
+  
