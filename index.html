@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gavity Simulation</title>
+<link rel="stylesheet" src="Gsimulations.css">
+</head>
+<body>
+
+<div class="controls">
+Mass 1 (kg): <input type="number" id="mass1" value="100"><br>
+Mass 2 (kg): <input type="number" id="mass2" value="100"><br>
+Speed: <input type="text" id="speed"  value="1"><br>
+<button id="resetBtn">Reset</button>
+</div>
+
+<div class="energy" id="energyDisplay"></div>
+<canvas id="sim"></canvas>
+
+<script src="Gsimulation.js"></script>
+</body>
+</html>
