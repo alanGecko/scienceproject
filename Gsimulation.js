@@ -46,31 +46,37 @@ document.getElementById('speed').addEventListener('input', e => {
 
 // acceleration by other bodies
 function computeAcceleration(b, others) {
-  let ax=0, ay=0;
+  let ax = 0, ay = 0, totalForce = 0;
   for (let other of others) {
     if (other === b) continue;
     const dx = other.x - b.x;
     const dy = other.y - b.y;
-    const dist2 = dx*dx + dy*dy + softening*softening;
+    const dist2 = dx * dx + dy * dy + softening * softening;
     const dist = Math.sqrt(dist2);
-    const force = G*b.mass*other.mass/dist2;
-    ax += force/b.mass * dx/dist;
-    ay += force/b.mass * dy/dist;
+    const force = G * b.mass * other.mass / dist2;
+    ax += (force / b.mass) * (dx / dist);
+    ay += (force / b.mass) * (dy / dist);
+    totalForce += force; // accumulate total magnitude
   }
-  return {ax, ay};
+  return { ax, ay, totalForce };
 }
 
+
 // Symplectic Euler step
+let lastForce = 0;
+
 function step(dt) {
   const accs = bodies.map(b => computeAcceleration(b, bodies));
-  for (let i=0; i<bodies.length; i++) {
+  for (let i = 0; i < bodies.length; i++) {
     bodies[i].vx += accs[i].ax * dt;
     bodies[i].vy += accs[i].ay * dt;
     bodies[i].x += bodies[i].vx * dt;
     bodies[i].y += bodies[i].vy * dt;
   }
+  if (bodies.length === 2) lastForce = accs[0].totalForce;
   handleCollisions();
 }
+
 
 // collision detect & merge
 function handleCollisions() {
@@ -133,7 +139,7 @@ function draw() {
 
 // Main loop
 function loop() {
-  // Update masses if two bodies exist
+  // Update masses 
   if (bodies.length===2) {
     bodies[0].mass = parseFloat(document.getElementById('mass1').value);
     bodies[0].radius = Math.cbrt(bodies[0].mass)*2;
@@ -147,10 +153,12 @@ function loop() {
   draw();
 
   const energies = computeEnergy();
-  
-    
+  document.getElementById('energyDisplay').innerText =
+    `Force: ${lastForce.toFixed(2)} N`;
 
-  requestAnimationFrame(loop);
+      
+
+    requestAnimationFrame(loop);
 }
 
 loop();
