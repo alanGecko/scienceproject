@@ -8,7 +8,7 @@ canvas.height = window.innerHeight;
 const G = 0.5;
 const softening = 5;
 const baseDt = 1/120;  // base physics timestep
-let speedMultiplier = 1;
+let speedMultiplier = 10;
 const SUBSTEPS = 5;    // substeps
 
 // Body array
@@ -62,7 +62,7 @@ function computeAcceleration(b, others) {
 }
 
 
-// Symplectic Euler step
+// Symplectic Euler step & the forcy thing baaaaaa
 let lastForce = 0;
 
 function step(dt) {
@@ -136,6 +136,33 @@ function draw() {
     ctx.stroke();
   }
 }
+function computeForcesOnBodies() {
+  if (bodies.length !== 2) return { F1: {x:0,y:0,mag:0}, F2: {x:0,y:0,mag:0} };
+
+  const b1 = bodies[0], b2 = bodies[1];
+  const dx = b2.x - b1.x;
+  const dy = b2.y - b1.y;
+  const dist2 = dx*dx + dy*dy + softening*softening;
+  const dist = Math.sqrt(dist2);
+
+  const forceMag = G * b1.mass * b2.mass / dist2;
+  const fx = forceMag * (dx / dist);
+  const fy = forceMag * (dy / dist);
+
+  // equal and opposite. 
+  const F1 = { x: fx,     y: fy,     mag: forceMag };
+  const F2 = { x: -fx,    y: -fy,    mag: forceMag };
+
+  return { F1, F2 };
+}
+
+function computeDistance() {
+  if (bodies.length !== 2) return 0;
+  const b1 = bodies[0], b2 = bodies[1];
+  const dx = b2.x - b1.x;
+  const dy = b2.y - b1.y;
+  return Math.sqrt(dx*dx + dy*dy);
+}
 
 // Main loop
 function loop() {
@@ -153,12 +180,15 @@ function loop() {
   draw();
 
   const energies = computeEnergy();
-  document.getElementById('energyDisplay').innerText =
-    `Force: ${lastForce.toFixed(2)} N`;
+  const { F1, F2 } = computeForcesOnBodies();
+  const dist = computeDistance();
 
-      
 
+document.getElementById('energyDisplay').innerText =
+  `Force: ${F1.mag.toFixed(2)} N
+Distance: ${dist.toFixed(2)} m`;     
     requestAnimationFrame(loop);
 }
+
 
 loop();
